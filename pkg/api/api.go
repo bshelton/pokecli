@@ -11,6 +11,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/bshelton/pokecli/pkg/config"
 	"github.com/bshelton/pokecli/pkg/logger"
@@ -56,6 +57,8 @@ func APIRequest(path string) (*string, error) {
 		logger.Warn(fmt.Sprintf("Api Key not set so therefor rate limiting is reduced. Set %s for a better experience", config.APIKeyEnvVarKey))
 	}
 
+	start := time.Now()
+
 	resp, err := client.Do(req)
 
 	if err != nil {
@@ -70,5 +73,7 @@ func APIRequest(path string) (*string, error) {
 	}
 	bodyString := string(bodyBytes)
 
+	duration := time.Since(start)
+	logger.Debug(fmt.Sprintf("Request took %d ms", duration.Milliseconds()))
 	return &bodyString, nil
 }
